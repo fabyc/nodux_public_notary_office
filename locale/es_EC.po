@@ -1,0 +1,578 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:notary.notary:"
+msgid "You can not delete invoice \"%s\" because it is send."
+msgstr "No puede eliminar la factura \"%s\" porque está enviada."
+
+msgctxt "error:notary.notary:"
+msgid "You can not modify invoice \"%s\" because it is send."
+msgstr "No puede modificar la factura \"%s\" porque está enviada."
+
+msgctxt "error:party.party:"
+msgid "Correo electronico no cumple con la estructura (ejemplo@mail.com)"
+msgstr ""
+
+msgctxt "error:party.party:"
+msgid ""
+"Es requerido ingresar un correo, para el envio de comprobantes electronicos"
+msgstr ""
+
+msgctxt "field:company.company,emission_code:"
+msgid "Tipo de Emision"
+msgstr ""
+
+msgctxt "field:company.company,logo:"
+msgid "Logo de su empresa"
+msgstr ""
+
+msgctxt "field:company.company,pass_pk12:"
+msgid "Password de la firma digital"
+msgstr ""
+
+msgctxt "field:company.company,password:"
+msgid "Password WS"
+msgstr ""
+
+msgctxt "field:company.company,password_pk12:"
+msgid "Password de la Firma Digital"
+msgstr ""
+
+msgctxt "field:company.company,password_ws:"
+msgid "Password WS"
+msgstr ""
+
+msgctxt "field:company.company,tipo_de_ambiente:"
+msgid "Tipo de Ambiente"
+msgstr ""
+
+msgctxt "field:company.company,user:"
+msgid "Usuario WS"
+msgstr ""
+
+msgctxt "field:company.company,user_ws:"
+msgid "Usuario WS"
+msgstr ""
+
+msgctxt "field:notary.notary,archivo_xml:"
+msgid "Factura formato XML"
+msgstr ""
+
+msgctxt "field:notary.notary,company:"
+msgid "Company"
+msgstr "Empresa"
+
+msgctxt "field:notary.notary,create_date:"
+msgid "Create Date"
+msgstr "Fecha de Creación"
+
+msgctxt "field:notary.notary,create_uid:"
+msgid "Create User"
+msgstr "Usuario creación"
+
+msgctxt "field:notary.notary,estado_sri:"
+msgid "Estado Facturacion-Electronica"
+msgstr ""
+
+msgctxt "field:notary.notary,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:notary.notary,invoice_date:"
+msgid "Fecha"
+msgstr ""
+
+msgctxt "field:notary.notary,iva:"
+msgid "IVA"
+msgstr ""
+
+msgctxt "field:notary.notary,number_invoice:"
+msgid "No. Comprobante"
+msgstr ""
+
+msgctxt "field:notary.notary,numero_autorizacion:"
+msgid "Numero de Autorizacion"
+msgstr ""
+
+msgctxt "field:notary.notary,party:"
+msgid "Party"
+msgstr "Terceros"
+
+msgctxt "field:notary.notary,path_pdf:"
+msgid "Path archivo pdf de factura"
+msgstr ""
+
+msgctxt "field:notary.notary,path_xml:"
+msgid "Path archivo xml de comprobante"
+msgstr ""
+
+msgctxt "field:notary.notary,rec_name:"
+msgid "Name"
+msgstr "Nombre"
+
+msgctxt "field:notary.notary,state:"
+msgid "State"
+msgstr "Estado"
+
+msgctxt "field:notary.notary,subtotal:"
+msgid "Subtotal"
+msgstr ""
+
+msgctxt "field:notary.notary,total:"
+msgid "Total"
+msgstr ""
+
+msgctxt "field:notary.notary,type:"
+msgid "Type"
+msgstr "Tipo"
+
+msgctxt "field:notary.notary,write_date:"
+msgid "Write Date"
+msgstr "Fecha de Modificación"
+
+msgctxt "field:notary.notary,write_uid:"
+msgid "Write User"
+msgstr "Modificado por Usuario"
+
+msgctxt "field:party.party,commercial_name:"
+msgid "Commercial Name"
+msgstr "Nombre comercial"
+
+msgctxt "field:party.party,contact_mechanisms2:"
+msgid "Contact Mechanisms"
+msgstr "Medios de Contacto"
+
+msgctxt "field:party.party,contribuyente_especial:"
+msgid "Contribuyente especial"
+msgstr ""
+
+msgctxt "field:party.party,contribuyente_especial_nro:"
+msgid "Nro. Resolucion"
+msgstr "No. Resolución"
+
+msgctxt "field:party.party,mandatory_accounting:"
+msgid "Mandatory Accounting"
+msgstr "Obligado Contabilidad"
+
+msgctxt "field:party.party,type_document:"
+msgid "Type Document"
+msgstr "Tipo de Documento"
+
+msgctxt "field:res.user,cabecera:"
+msgid "Protocolo de Comunicacion"
+msgstr ""
+
+msgctxt "field:res.user,direccion:"
+msgid "Direccion del Servidor"
+msgstr ""
+
+msgctxt "field:res.user,name_db:"
+msgid "Nombre de la Base de Datos"
+msgstr ""
+
+msgctxt "field:res.user,name_db_c:"
+msgid "Nombre de la Base de Datos"
+msgstr ""
+
+msgctxt "field:res.user,pass_db:"
+msgid "Password de la Base de Datos"
+msgstr ""
+
+msgctxt "field:res.user,pass_db_c:"
+msgid "Password de la Base de Datos"
+msgstr ""
+
+msgctxt "field:res.user,puerto:"
+msgid "Nro. Puerto"
+msgstr ""
+
+msgctxt "field:res.user,usuario:"
+msgid "Usuario de la Base de Datos"
+msgstr ""
+
+msgctxt "field:res.user,usuario_c:"
+msgid "Usuario de la Base de Datos"
+msgstr ""
+
+msgctxt "help:company.company,logo:"
+msgid "Logo para RIDE de sus facturas"
+msgstr ""
+
+msgctxt "help:company.company,password_pk12:"
+msgid "Contraseña de la firma digital"
+msgstr ""
+
+msgctxt "help:company.company,password_ws:"
+msgid "Ingrese la contraseña que le fue emitido por NODUX"
+msgstr ""
+
+msgctxt "help:company.company,user_ws:"
+msgid "Ingrese el usuario que le fue emitido por NODUX"
+msgstr ""
+
+msgctxt "help:notary.notary,archivo_xml:"
+msgid "Cargar el archivo xml para firma y autorizacion"
+msgstr ""
+
+msgctxt "help:party.party,contact_mechanisms2:"
+msgid "Requerido ingresar un correo electronico"
+msgstr ""
+
+msgctxt "help:party.party,contribuyente_especial:"
+msgid "Seleccione solo si es contribuyente especial"
+msgstr ""
+
+msgctxt "help:party.party,contribuyente_especial_nro:"
+msgid "Contribuyente Especial Nro."
+msgstr ""
+
+msgctxt "help:res.user,direccion:"
+msgid "Direccion para conexion con WS-Nodux"
+msgstr ""
+
+msgctxt "help:res.user,puerto:"
+msgid "Puerto para conexion con WS-Nodux"
+msgstr ""
+
+msgctxt "model:ir.action,name:act_notary_form"
+msgid "Electronics vouchers"
+msgstr "Comprobantes electrónicos"
+
+msgctxt "model:ir.action,name:act_notary_out_credit_note_form"
+msgid "Credit Notes"
+msgstr "Notas de Crédito"
+
+msgctxt "model:ir.action,name:act_notary_out_invoice_form"
+msgid "Invoices"
+msgstr "Facturas"
+
+msgctxt "model:ir.action,name:report_notary"
+msgid "Comprobante"
+msgstr ""
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_notary_out_credit_note_domain_all"
+msgid "All"
+msgstr "Todo"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_notary_out_credit_note_domain_draft"
+msgid "Borrador"
+msgstr "No enviado"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_notary_out_credit_note_domain_send"
+msgid "Enviado"
+msgstr "Enviado"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_notary_out_invoice_domain_all"
+msgid "All"
+msgstr "Todo"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_notary_out_invoice_domain_draft"
+msgid "Borrador"
+msgstr "No enviado"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_notary_out_invoice_domain_send"
+msgid "Enviado"
+msgstr "Enviado"
+
+msgctxt "model:ir.ui.menu,name:menu_notary_out_credit_note_form"
+msgid "Credit Notes"
+msgstr "Notas de Crédito"
+
+msgctxt "model:ir.ui.menu,name:menu_notary_out_invoice_form"
+msgid "Invoices"
+msgstr "Facturas"
+
+msgctxt "model:ir.ui.menu,name:public_notary"
+msgid "Public Notary"
+msgstr "Notaria Pública"
+
+msgctxt "model:notary.notary,name:"
+msgid "Notary"
+msgstr "Notaria"
+
+msgctxt "odt:notary.notary:"
+msgid "%"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "0"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "0.00"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "14"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "4"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid ":"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "A"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "CLAVE DE ACCESO:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Cantidad"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Comprobante que se modifica"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Contribuyente especial Nro.:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Descripcion"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Direcció"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Dirección"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "EMISION: NORMAL"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Email:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "FACTURA"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Fecha emision (comprobante a modificar)"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Fecha emisión"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "I"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "IVA 1"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Identificación:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "MBIENTE:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "N"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "NFORMACIÓN ADICIONAL"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "NUMERO DE AUTORIZACIÓN"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "N°:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "OTA DE CRÉDITO"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Obligado a llevar contabilidad:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "PRODUCCIÓN"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Precio Total"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Precio Unitario"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "RUC"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Razón social/Nombre y Apellidos:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Razón:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "SUBTOTAL"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "SUBTOTAL SIN IMPUESTOS"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "SUBTOTAL excento de IVA"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "SUBTOTAL no objeto de IVA"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "VALOR TOTAL"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "matriz"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "n"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "n sucursal:"
+msgstr ""
+
+msgctxt "selection:company.company,emission_code:"
+msgid "Normal"
+msgstr ""
+
+msgctxt "selection:company.company,tipo_de_ambiente:"
+msgid "Produccion"
+msgstr ""
+
+msgctxt "selection:company.company,tipo_de_ambiente:"
+msgid "Pruebas"
+msgstr ""
+
+msgctxt "selection:notary.notary,state:"
+msgid "Draft"
+msgstr "No enviado"
+
+msgctxt "selection:notary.notary,state:"
+msgid "Send"
+msgstr "Enviado"
+
+msgctxt "selection:notary.notary,type:"
+msgid "Credit Note"
+msgstr "Notas de Crédito"
+
+msgctxt "selection:notary.notary,type:"
+msgid "Invoice"
+msgstr "Facturas"
+
+msgctxt "selection:party.party,mandatory_accounting:"
+msgid ""
+msgstr ""
+
+msgctxt "selection:party.party,mandatory_accounting:"
+msgid "No"
+msgstr ""
+
+msgctxt "selection:party.party,mandatory_accounting:"
+msgid "Si"
+msgstr ""
+
+msgctxt "selection:party.party,type_document:"
+msgid ""
+msgstr ""
+
+msgctxt "selection:party.party,type_document:"
+msgid "Cedula"
+msgstr ""
+
+msgctxt "selection:party.party,type_document:"
+msgid "Consumidor Final"
+msgstr ""
+
+msgctxt "selection:party.party,type_document:"
+msgid "Pasaporte"
+msgstr ""
+
+msgctxt "selection:party.party,type_document:"
+msgid "RUC"
+msgstr ""
+
+msgctxt "selection:res.user,cabecera:"
+msgid "http://"
+msgstr ""
+
+msgctxt "selection:res.user,cabecera:"
+msgid "https://"
+msgstr ""
+
+msgctxt "view:company.company:"
+msgid "Firma Digital"
+msgstr ""
+
+msgctxt "view:company.company:"
+msgid "NODUX WS"
+msgstr ""
+
+msgctxt "view:company.company:"
+msgid "Tipo de Ambiente"
+msgstr ""
+
+msgctxt "view:company.company:"
+msgid "Usuario y password de autenticacion"
+msgstr ""
+
+msgctxt "view:notary.notary:"
+msgid "Invoice"
+msgstr "Facturas"
+
+msgctxt "view:notary.notary:"
+msgid "Invoices"
+msgstr "Facturas"
+
+msgctxt "view:notary.notary:"
+msgid "Monto total comprobantes emitidos"
+msgstr ""
+
+msgctxt "view:notary.notary:"
+msgid "_Send"
+msgstr "Enviar SRI"
+
+msgctxt "view:party.party:"
+msgid "VAT"
+msgstr "CI/RUC"
+
+msgctxt "view:res.user:"
+msgid "Conexion WS-Nodux"
+msgstr ""

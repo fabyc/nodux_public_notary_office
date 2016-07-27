@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+
+      <menuitem name="Public Notary" sequence="0" id="public_notary"/>
+
+      <record model="ir.ui.view" id="notary_view_form">
+          <field name="model">notary.notary</field>
+          <field name="type">form</field>
+          <field name="name">notary_form</field>
+      </record>
+      <record model="ir.ui.view" id="notary_view_tree">
+          <field name="model">notary.notary</field>
+          <field name="type">tree</field>
+          <field name="name">notary_tree</field>
+      </record>
+
+      <record model="ir.action.act_window" id="act_notary_form">
+          <field name="name">Electronics vouchers</field>
+          <field name="res_model">notary.notary</field>
+      </record>
+      <record model="ir.action.act_window.view" id="act_notary_form_view1">
+          <field name="sequence" eval="10"/>
+          <field name="view" ref="notary_view_tree"/>
+          <field name="act_window" ref="act_notary_form"/>
+      </record>
+
+        <record model="ir.action.act_window.view" id="act_notary_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="notary_view_form"/>
+            <field name="act_window" ref="act_notary_form"/>
+        </record>
+
+        <record model="ir.action.act_window" id="act_notary_out_invoice_form">
+            <field name="name">Invoices</field>
+            <field name="res_model">notary.notary</field>
+            <field name="domain">[('type', '=', 'out_invoice')]</field>
+            <field name="context">{'type': 'out_invoice'}</field>
+            <field name="search_value"></field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_notary_out_invoice_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="notary_view_tree"/>
+            <field name="act_window" ref="act_notary_out_invoice_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_notary_out_invoice_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="notary_view_form"/>
+            <field name="act_window" ref="act_notary_out_invoice_form"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_notary_out_invoice_domain_draft">
+            <field name="name">Not Send</field>
+            <field name="sequence" eval="10"/>
+            <field name="domain">[('state', '=', 'draft')]</field>
+            <field name="act_window" ref="act_notary_out_invoice_form"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_notary_out_invoice_domain_send">
+            <field name="name">Sended</field>
+            <field name="sequence" eval="20"/>
+            <field name="domain">[('state', '=', 'send')]</field>
+            <field name="act_window" ref="act_notary_out_invoice_form"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_notary_out_invoice_domain_all">
+            <field name="name">All</field>
+            <field name="sequence" eval="9999"/>
+            <field name="domain"></field>
+            <field name="act_window" ref="act_notary_out_invoice_form"/>
+        </record>
+        <menuitem parent="public_notary" action="act_notary_out_invoice_form"
+            id="menu_notary_out_invoice_form" sequence="1"/>
+
+        <record model="ir.action.act_window" id="act_notary_out_credit_note_form">
+            <field name="name">Credit Notes</field>
+            <field name="res_model">notary.notary</field>
+            <field name="domain">[('type', '=', 'out_credit_note')]</field>
+            <field name="context">{'type': 'out_credit_note'}</field>
+            <field name="search_value"></field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_notary_out_credit_note_form_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="notary_view_tree"/>
+            <field name="act_window" ref="act_notary_out_credit_note_form"/>
+        </record>
+        <record model="ir.action.act_window.view" id="act_notary_out_credit_note_form_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="notary_view_form"/>
+            <field name="act_window" ref="act_notary_out_credit_note_form"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_notary_out_credit_note_domain_draft">
+            <field name="name">Not Send</field>
+            <field name="sequence" eval="10"/>
+            <field name="domain">[('state', '=', 'draft')]</field>
+            <field name="act_window" ref="act_notary_out_credit_note_form"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_notary_out_credit_note_domain_send">
+            <field name="name">Sended</field>
+            <field name="sequence" eval="20"/>
+            <field name="domain">[('state', '=', 'send')]</field>
+            <field name="act_window" ref="act_notary_out_credit_note_form"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_notary_out_credit_note_domain_all">
+            <field name="name">All</field>
+            <field name="sequence" eval="9999"/>
+            <field name="domain"></field>
+            <field name="act_window" ref="act_notary_out_credit_note_form"/>
+        </record>
+        <menuitem parent="public_notary" action="act_notary_out_credit_note_form"
+            id="menu_notary_out_credit_note_form" sequence="2"/>
+
+        <!-- Report -->
+        <record model="ir.action.report" id="report_notary">
+            <field name="name">Comprobante </field>
+            <field name="model">notary.notary</field>
+            <field name="report_name">notary.notary</field>
+            <field name="report">nodux_public_notary_office/invoice.odt</field>
+            <field name="style"></field>
+        </record>
+
+        <record model="ir.action.keyword" id="report_notary_keyword">
+            <field name="keyword">form_print</field>
+            <field name="model">notary.notary,-1</field>
+            <field name="action" ref="report_notary"/>
+        </record>
+    </data>
+</tryton>

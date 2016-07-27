@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<form string="Invoice" col="6" cursor="party">
+    <label name="company"/>
+    <field name="company"/>
+    <label name="party"/>
+    <field name="party"/>
+    <label name="type"/>
+    <field name="type"/>
+    <newline/>
+    <label name="archivo_xml"/>
+    <field name="archivo_xml"/>
+    <label name="number_invoice"/>
+    <field name="number_invoice"/>
+    <label name="estado_sri"/>
+    <field name="estado_sri"/>
+    <newline/>
+    <label name="clave"/>
+    <field name="clave"/>
+    <label name="numero_autorizacion"/>
+    <field name="numero_autorizacion"/>
+    <newline/>
+    <group col="2" colspan="2" id="state">
+        <label name="state"/>
+        <field name="state"/>
+    </group>
+
+    <group col="5" colspan="4" id="buttons">
+        <button name="send" string="_Send"
+            icon="tryton-ok"/>
+    </group>
+    <newline/>
+    <group col="6" colspan="6" id="msn">
+      <label name="mensaje"/>
+      <field name="mensaje"/>
+    </group>
+
+</form>

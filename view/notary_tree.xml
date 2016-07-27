@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tree string="Invoices">
+    <field name="invoice_date"/>
+    <field name="state"/>
+    <field name="estado_sri"/>
+    <field name="number_invoice"/>
+    <field name="clave"/>
+    <field name="party"/>
+    <field name="subtotal"/>
+    <field name="iva"/>
+    <field name="total" sum="Monto total comprobantes emitidos"/>
+</tree>
