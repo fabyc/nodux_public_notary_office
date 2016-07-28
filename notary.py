@@ -73,6 +73,8 @@ class Notary(Workflow, ModelSQL, ModelView):
     clave = fields.Char('Clave de acceso', readonly=True)
     invoice_date = fields.Char('Fecha', readonly=True)
     fecha_autorizacion = fields.Char('Fecha Autorizacion', readonly=True)
+    matrizador = fields.Char('Matrizador', readonly=True)
+    no_libro = fields.Char('Numero de libro', readonly=True)
 
     @classmethod
     def __setup__(cls):
@@ -351,6 +353,8 @@ class Notary(Workflow, ModelSQL, ModelView):
             totalSinImpuestos = Decimal(0.0)
             importeTotal = Decimal(0.0)
             nombre = ""
+            numero_libro = ""
+            matrizador = ""
             direccion = "Loja"
             if len(raiz) == 3:
                 infoTributaria = raiz[0]
@@ -390,7 +394,18 @@ class Notary(Workflow, ModelSQL, ModelView):
 
             if infoAdicional != None:
                 for ia in infoAdicional:
-                    print ia.text
+                    if re.match("[a-zA-ZñÑáéíóúÁÉÍÓÚ\ ]", ia.text):
+                        matrizador = ia.text
+                        break
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if re.match("[a-z0-9]", ia.text):
+                        numero_libro = ia.text
+                        break
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
                     if re.match("[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})", ia.text):
                         email = ia.text
                         break
@@ -437,7 +452,9 @@ class Notary(Workflow, ModelSQL, ModelView):
                         'numero_autorizacion':num,
                         'clave':access_key,
                         'invoice_date':str(fechaEmision),
-                        'mensaje':doc_xml})
+                        'mensaje':doc_xml,
+                        'no_libro':numero_libro,
+                        'matrizador':matrizador})
             else:
                 Party = pool.get('party.party')
                 parties = Party.search([('vat_number', '=', vat_number)])
@@ -473,7 +490,9 @@ class Notary(Workflow, ModelSQL, ModelView):
                         'estado_sri':'AUTORIZADO',
                         'numero_autorizacion':num,
                         'clave':access_key,
-                        'invoice_date':str(fechaEmision)})
+                        'invoice_date':str(fechaEmision),
+                        'no_libro':numero_libro,
+                        'matrizador':matrizador})
                 self.send_mail_invoice(doc_xml, access_key, send_m, s)
 
             os.remove(directory_xml)
@@ -578,6 +597,18 @@ class Notary(Workflow, ModelSQL, ModelView):
 
                 if infoAdicional != None:
                     for ia in infoAdicional:
+                        if re.match("[a-zA-ZñÑáéíóúÁÉÍÓÚ\ ]", ia.text):
+                            matrizador = ia.text
+                            break
+
+                if infoAdicional != None:
+                    for ia in infoAdicional:
+                        if re.match("[a-z0-9]", ia.text):
+                            numero_libro = ia.text
+                            break
+
+                if infoAdicional != None:
+                    for ia in infoAdicional:
                         print ia.text
                         if re.match("[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})", ia.text):
                             email = ia.text
@@ -625,7 +656,9 @@ class Notary(Workflow, ModelSQL, ModelView):
                             'clave':access_key,
                             'invoice_date':str(fechaEmision),
                             'mensaje':doc_xml,
-                            'state':'draft'})
+                            'state':'draft',
+                            'no_libro':numero_libro,
+                            'matrizador':matrizador})
                 else:
                     Party = pool.get('party.party')
                     parties = Party.search([('vat_number', '=', vat_number)])
@@ -661,7 +694,9 @@ class Notary(Workflow, ModelSQL, ModelView):
                             'estado_sri':'AUTORIZADO',
                             'numero_autorizacion':num,
                             'clave':access_key,
-                            'invoice_date':str(fechaEmision)})
+                            'invoice_date':str(fechaEmision),
+                            'no_libro':numero_libro,
+                            'matrizador':matrizador})
 
                     self.send_mail_invoice(doc_xml, access_key, send_m, s)
                 os.remove(directory_xml)
