@@ -42,6 +42,7 @@ _TYPE = [
 class Notary(Workflow, ModelSQL, ModelView):
     'Notary'
     __name__ = 'notary.notary'
+    _order_name = 'number_invoice'
 
     company = fields.Many2One('company.company', 'Company', required=True,
         readonly=True, select=True, domain=[
@@ -76,7 +77,8 @@ class Notary(Workflow, ModelSQL, ModelView):
     @classmethod
     def __setup__(cls):
         super(Notary, cls).__setup__()
-
+        cls._order.insert(0, ('number_invoice', 'DESC'))
+        cls._order.insert(1, ('id', 'DESC'))
         cls._error_messages.update({
                 'modify_notary': ('You can not modify invoice "%s" because '
                     'it is send.'),
@@ -145,10 +147,8 @@ class Notary(Workflow, ModelSQL, ModelView):
             u"Û":"U",u"á":"a",u"à":"a",u"â":"a",u"ä":"a",u"é":"e",u"è":"e",u"ê":"e",u"ë":"e",u"í":"i",u"ì":"i",
             u"ï":"i",u"î":"i",u"ó":"o",u"ò":"o",u"ô":"o",u"ö":"o",u"ú":"u",u"ù":"u",u"ü":"u",u"û":"u",u"ñ":"n",
             u"Ñ":"N"}
-        print "Cadena reemplazo ", cadena
         regex = re.compile("(%s)" % "|".join(map(re.escape, reemplazo.keys())))
         nueva_cadena = regex.sub(lambda x: str(reemplazo[x.string[x.start():x.end()]]), cadena)
-        print "Cadena nueva ", nueva_cadena
         return nueva_cadena
 
     def web_service(self):
@@ -230,10 +230,8 @@ class Notary(Workflow, ModelSQL, ModelView):
             from_email = "nodux.ec@gmail.com"
         name = access_key + ".xml"
         reporte = xmlrpclib.Binary(report[1])
-        print "Este es el archivo que se enviara en correo ", xml_element
         xml_element = self.replace_charter(xml_element)
         #xml_element = unicode(xml_element, 'utf-8')
-        print "Transformado ", xml_element
         xml = xmlrpclib.Binary(xml_element.replace('><', '>\n<'))
         #reporte = xmlrpclib.Binary(xml_element.replace('><', '>\n<'))
 
@@ -276,9 +274,6 @@ class Notary(Workflow, ModelSQL, ModelView):
             s.model.nodux_electronic_invoice_auth.conexiones.connect_db( nombre, cedula, ruc, nombre_e, tipo, fecha, empresa, numero, path_xml, path_pdf,estado, auth, email, email_e, total, {})
 
     def action_generate_invoice(self):
-        """
-        """
-        print "Ingresa"
         PK12 = u'No ha configurado los datos de la empresa. Dirijase a: \n Empresa -> NODUX WS'
         AUTHENTICATE_ERROR = u'Error de datos de conexión al autorizador de \nfacturacion electrónica.\nVerifique: USUARIO Y CONTRASEÑA .'
         ACTIVE_ERROR = u"Ud. no se encuentra activo, verifique su pago. \nComuníquese con NODUX"
@@ -673,7 +668,7 @@ class Notary(Workflow, ModelSQL, ModelView):
         return access_key
 
     @classmethod
-    @ModelView.button
+    @ModelView.button_action('nodux_public_notary_office.report_notary')
     def send(cls, notaries):
         for notary in notaries:
             notary.action_generate_invoice()
