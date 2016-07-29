@@ -356,6 +356,9 @@ class Notary(Workflow, ModelSQL, ModelView):
             numero_libro = ""
             matrizador = ""
             direccion = "Loja"
+            phone = ""
+            mobile = ""
+
             if len(raiz) == 3:
                 infoTributaria = raiz[0]
                 infoFactura = raiz[1]
@@ -410,6 +413,17 @@ class Notary(Workflow, ModelSQL, ModelView):
                         email = ia.text
                         break
 
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if ia.text.isdigit() and len(ia.text) > 9:
+                        mobile = ia.text
+                        break
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if ia.text.isdigit() and len(ia.text) <=9:
+                        phone = ia.text
+                        break
             doc_xml, m, auth, path, numero, num = s.model.nodux_electronic_invoice_auth.conexiones.request_authorization(access_key, name_r, 'out_invoice', signed_document,{})
 
             if doc_xml is None:
@@ -430,15 +444,29 @@ class Notary(Workflow, ModelSQL, ModelView):
                     party.name = nombre
                     party.vat_number = vat_number
                     party.save()
-                    party.contact_mechanisms = Contact.create([{
+                    contact_mechanisms = []
+                    contact_mechanisms.append({
                             'type':'email',
                             'value':correo,
                             'party':party.id
-                    }])
+                    })
+                    if phone != "":
+                        contact_mechanisms.append({
+                                'type':'phone',
+                                'value':phone,
+                                'party':party.id,
+                        })
+                    if mobile != "":
+                        contact_mechanisms.append({
+                                'type':'mobile',
+                                'value':mobile,
+                                'party':party.id,
+                        })
                     party.address = Address.create([{
                             'street': direccion,
                             'party':party.id
                     }])
+                    contact_mechanisms = Contact.create(contact_mechanisms)
 
                     party.save()
 
@@ -469,16 +497,29 @@ class Notary(Workflow, ModelSQL, ModelView):
                     party.name = nombre
                     party.vat_number = vat_number
                     party.save()
-                    party.contact_mechanisms = Contact.create([{
+                    contact_mechanisms = []
+                    contact_mechanisms.append({
                             'type':'email',
                             'value':correo,
                             'party':party.id
-                    }])
+                    })
+                    if phone != "":
+                        contact_mechanisms.append({
+                                'type':'phone',
+                                'value':phone,
+                                'party':party.id,
+                        })
+                    if mobile != "":
+                        contact_mechanisms.append({
+                                'type':'mobile',
+                                'value':mobile,
+                                'party':party.id,
+                        })
                     party.address = Address.create([{
                             'street': direccion,
                             'party':party.id
                     }])
-
+                    contact_mechanisms = Contact.create(contact_mechanisms)
                     party.save()
 
                 self.write([self],{
@@ -558,7 +599,8 @@ class Notary(Workflow, ModelSQL, ModelView):
                 importeTotal = Decimal(0.0)
                 nombre = ""
                 direccion = "Loja"
-
+                phone = ""
+                mobile = ""
                 if len(raiz) == 3:
                     infoTributaria = raiz[0]
                     infoNotaCredito = raiz[1]
@@ -609,9 +651,20 @@ class Notary(Workflow, ModelSQL, ModelView):
 
                 if infoAdicional != None:
                     for ia in infoAdicional:
-                        print ia.text
                         if re.match("[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})", ia.text):
                             email = ia.text
+                            break
+
+                if infoAdicional != None:
+                    for ia in infoAdicional:
+                        if ia.text.isdigit() and len(ia.text) > 9:
+                            mobile = ia.text
+                            break
+
+                if infoAdicional != None:
+                    for ia in infoAdicional:
+                        if ia.text.isdigit() and len(ia.text) <=9:
+                            phone = ia.text
                             break
 
                 doc_xml, m, auth, path, numero, num = s.model.nodux_electronic_invoice_auth.conexiones.request_authorization(access_key, name_r, 'out_credit_note', signed_document, {})
@@ -633,15 +686,29 @@ class Notary(Workflow, ModelSQL, ModelView):
                         party.name = nombre
                         party.vat_number = vat_number
                         party.save()
-                        party.contact_mechanisms = Contact.create([{
+                        contact_mechanisms = []
+                        contact_mechanisms.append({
                                 'type':'email',
                                 'value':correo,
                                 'party':party.id
-                        }])
+                        })
+                        if phone != "":
+                            contact_mechanisms.append({
+                                    'type':'phone',
+                                    'value':phone,
+                                    'party':party.id,
+                            })
+                        if mobile != "":
+                            contact_mechanisms.append({
+                                    'type':'mobile',
+                                    'value':mobile,
+                                    'party':party.id,
+                            })
                         party.address = Address.create([{
                                 'street': direccion,
                                 'party':party.id
                         }])
+                        contact_mechanisms = Contact.create(contact_mechanisms)
 
                         party.save()
 
@@ -673,15 +740,29 @@ class Notary(Workflow, ModelSQL, ModelView):
                         party.name = nombre
                         party.vat_number = vat_number
                         party.save()
-                        party.contact_mechanisms = Contact.create([{
+                        contact_mechanisms = []
+                        contact_mechanisms.append({
                                 'type':'email',
                                 'value':correo,
                                 'party':party.id
-                        }])
+                        })
+                        if phone != "":
+                            contact_mechanisms.append({
+                                    'type':'phone',
+                                    'value':phone,
+                                    'party':party.id,
+                            })
+                        if mobile != "":
+                            contact_mechanisms.append({
+                                    'type':'mobile',
+                                    'value':mobile,
+                                    'party':party.id,
+                            })
                         party.address = Address.create([{
                                 'street': direccion,
                                 'party':party.id
                         }])
+                        contact_mechanisms = Contact.create(contact_mechanisms)
 
                         party.save()
 
