@@ -42,7 +42,7 @@ _TYPE = [
 class Notary(Workflow, ModelSQL, ModelView):
     'Notary'
     __name__ = 'notary.notary'
-    _order_name = 'number_invoice'
+    _order_name = 'invoice_date'
 
     company = fields.Many2One('company.company', 'Company', required=True,
         readonly=True, select=True, domain=[
@@ -79,8 +79,8 @@ class Notary(Workflow, ModelSQL, ModelView):
     @classmethod
     def __setup__(cls):
         super(Notary, cls).__setup__()
-        cls._order.insert(0, ('number_invoice', 'DESC'))
-        cls._order.insert(1, ('id', 'DESC'))
+        cls._order.insert(1, ('invoice_date', 'DESC'))
+        cls._order.insert(0, ('id', 'DESC'))
         cls._error_messages.update({
                 'modify_notary': ('You can not modify invoice "%s" because '
                     'it is send.'),
@@ -285,7 +285,7 @@ class Notary(Workflow, ModelSQL, ModelView):
         MESSAGE_TIME_LIMIT = u'Se ha excedido el límite de tiempo. Los comprobantes electrónicos deben ser enviados al SRI para su autorización, en un plazo máximo de 24 horas'
         WAIT_FOR_RECEIPT = 15
         pool = Pool()
-
+        Notary = pool.get('notary.notary')
         usuario = self.company.user_ws
         password_u= self.company.password_ws
         #access_key = self.generate_access_key()
@@ -380,6 +380,9 @@ class Notary(Workflow, ModelSQL, ModelView):
                 if it.tag == "secuencial":
                     secuencial = it.text
             numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
+            notaries = Notary.search([('number_invoice', '=', numero_factura)])
+            if notaries :
+                self.raise_user_error('Comprobante ya enviado al SRI')
 
             for i_f in infoFactura:
                 if i_f.tag == "identificacionComprador":
@@ -608,7 +611,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                     infoAdicional = None
                 if len(raiz) == 4 :
                     infoTributaria = raiz[0]
-                    infoFactura = raiz[1]
+                    infoNotaCredito = raiz[1]
                     detalles = raiz[2]
                     infoAdicional = raiz[3]
 
@@ -622,6 +625,9 @@ class Notary(Workflow, ModelSQL, ModelView):
                     if it.tag == "secuencial":
                         secuencial = it.text
                 numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
+                notaries = Notary.search([('number_invoice', '=', numero_factura)])
+                if notaries :
+                    self.raise_user_error('Comprobante ya enviado al SRI')
 
                 for i_f in infoNotaCredito:
                     if i_f.tag == "identificacionComprador":
@@ -784,7 +790,7 @@ class Notary(Workflow, ModelSQL, ModelView):
         return access_key
 
     @classmethod
-    @ModelView.button_action('nodux_public_notary_office.report_notary')
+    @ModelView.button
     def send(cls, notaries):
         for notary in notaries:
             notary.action_generate_invoice()
