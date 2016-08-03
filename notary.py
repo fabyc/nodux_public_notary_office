@@ -23,6 +23,7 @@ from trytond.rpc import RPC
 import os
 from trytond.config import config
 import re
+from trytond import backend
 
 directory = config.get('database', 'path')
 directory_xml = directory +'/factura.xml'
@@ -42,7 +43,7 @@ _TYPE = [
 class Notary(Workflow, ModelSQL, ModelView):
     'Notary'
     __name__ = 'notary.notary'
-    _order_name = 'invoice_date'
+    _order_name = 'invoice_date_'
 
     company = fields.Many2One('company.company', 'Company', required=True,
         readonly=True, select=True, domain=[
@@ -71,16 +72,16 @@ class Notary(Workflow, ModelSQL, ModelView):
     path_pdf = fields.Char(u'Path archivo pdf de factura', readonly=True)
     numero_autorizacion = fields.Char('Numero Autorizacion', readonly=True)
     clave = fields.Char('Clave de acceso', readonly=True)
-    invoice_date = fields.Char('Fecha', readonly=True)
     fecha_autorizacion = fields.Char('Fecha Autorizacion', readonly=True)
     matrizador = fields.Char('Matrizador', readonly=True)
     no_libro = fields.Char('Numero de libro', readonly=True)
+    invoice_date_ = fields.Date('Fecha', readonly=True)
 
     @classmethod
     def __setup__(cls):
         super(Notary, cls).__setup__()
-        cls._order.insert(1, ('invoice_date', 'DESC'))
-        cls._order.insert(0, ('id', 'DESC'))
+        cls._order.insert(0, ('invoice_date_', 'DESC'))
+        cls._order.insert(1, ('id', 'DESC'))
         cls._error_messages.update({
                 'modify_notary': ('You can not modify invoice "%s" because '
                     'it is send.'),
@@ -96,6 +97,29 @@ class Notary(Workflow, ModelSQL, ModelView):
                     'invisible': Eval('state') != 'draft'
                 },
             })
+
+    @classmethod
+    def __register__(cls, module_name):
+        TableHandler = backend.get('TableHandler')
+        cursor = Transaction().cursor
+        table = TableHandler(cursor, cls, module_name)
+
+        super(Notary, cls).__register__(module_name)
+
+        if (table.column_exist('invoice_date') and table.column_exist('invoice_date_')):
+            sql_table = cls.__table__()
+            cursor.execute(*sql_table.select(sql_table.id, sql_table.invoice_date))
+            for invoice_id, invoice_date in cursor.fetchall():
+                if invoice_date != None:
+                    date_str = invoice_date
+                    formatter_string = "%d/%m/%Y"
+                    datetime_object = datetime.datetime.strptime(date_str, formatter_string)
+                    new_date = datetime_object.date()
+                    cursor.execute(*sql_table.update(
+                            columns=[sql_table.invoice_date_],
+                            values=[new_date],
+                            where=sql_table.id == invoice_id))
+            table.drop_column('invoice_date')
 
     @staticmethod
     def default_state():
@@ -254,7 +278,7 @@ class Notary(Workflow, ModelSQL, ModelView):
         ruc = self.company.party.vat_number
         nombre_e = self.company.party.name
         tipo = self.type
-        fecha = str(self.invoice_date)
+        fecha = str(self.invoice_date_)
         empresa = self.company.party.name
         numero = self.number_invoice
         path_xml = self.path_xml
@@ -289,6 +313,7 @@ class Notary(Workflow, ModelSQL, ModelView):
         usuario = self.company.user_ws
         password_u= self.company.password_ws
         #access_key = self.generate_access_key()
+
         address_xml = self.web_service()
         s= xmlrpclib.ServerProxy(address_xml)
         if self.archivo_xml:
@@ -396,7 +421,10 @@ class Notary(Workflow, ModelSQL, ModelView):
                 if i_f.tag == 'importeTotal':
                     importeTotal = Decimal(i_f.text)
                 if i_f.tag == 'fechaEmision':
-                    fechaEmision = i_f.text
+                    date_str = i_f.text
+                    formatter_string = "%d/%m/%Y"
+                    datetime_object = datetime.datetime.strptime(date_str, formatter_string)
+                    fechaEmision = datetime_object.date()
 
             if infoAdicional != None:
                 for ia in infoAdicional:
@@ -482,7 +510,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                         'estado_sri':'NO AUTORIZADO',
                         'numero_autorizacion':num,
                         'clave':access_key,
-                        'invoice_date':str(fechaEmision),
+                        'invoice_date_':fechaEmision,
                         'mensaje':doc_xml,
                         'no_libro':numero_libro,
                         'matrizador':matrizador})
@@ -534,7 +562,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                         'estado_sri':'AUTORIZADO',
                         'numero_autorizacion':num,
                         'clave':access_key,
-                        'invoice_date':str(fechaEmision),
+                        'invoice_date_':fechaEmision,
                         'no_libro':numero_libro,
                         'matrizador':matrizador})
                 self.send_mail_invoice(doc_xml, access_key, send_m, s)
@@ -641,7 +669,10 @@ class Notary(Workflow, ModelSQL, ModelView):
                     if i_f.tag == 'valorModificacion':
                         importeTotal = Decimal(i_f.text)
                     if i_f.tag == 'fechaEmision':
-                        fechaEmision = i_f.text
+                        date_str = i_f.text
+                        formatter_string = "%d/%m/%Y"
+                        datetime_object = datetime.datetime.strptime(date_str, formatter_string)
+                        fechaEmision = datetime_object.date()
 
                 if infoAdicional != None:
                     for ia in infoAdicional:
@@ -727,7 +758,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                             'estado_sri':'NO AUTORIZADO',
                             'numero_autorizacion':num,
                             'clave':access_key,
-                            'invoice_date':str(fechaEmision),
+                            'invoice_date_':fechaEmision,
                             'mensaje':doc_xml,
                             'state':'draft',
                             'no_libro':numero_libro,
@@ -781,7 +812,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                             'estado_sri':'AUTORIZADO',
                             'numero_autorizacion':num,
                             'clave':access_key,
-                            'invoice_date':str(fechaEmision),
+                            'invoice_date_':fechaEmision,
                             'no_libro':numero_libro,
                             'matrizador':matrizador})
 
