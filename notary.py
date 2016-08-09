@@ -253,13 +253,11 @@ class Notary(Workflow, ModelSQL, ModelView):
         if send_m == '1':
             from_email = f_e
         else :
-            from_email = "nodux.ec@gmail.com"
+            from_email = f_e
         name = access_key + ".xml"
         reporte = xmlrpclib.Binary(report[1])
         xml_element = self.replace_charter(xml_element)
-        #xml_element = unicode(xml_element, 'utf-8')
         xml = xmlrpclib.Binary(xml_element.replace('><', '>\n<'))
-        #reporte = xmlrpclib.Binary(xml_element.replace('><', '>\n<'))
 
         save_files = s.model.nodux_electronic_invoice_auth.conexiones.save_file(empresa, name_pdf, name_xml, reporte, xml,{})
         p_xml = nuevaruta + name_xml
