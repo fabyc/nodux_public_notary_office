@@ -27,6 +27,8 @@ this repository contains the full copyright notices and license terms. -->
     </group>
 
     <group col="5" colspan="4" id="buttons">
+        <button name="save" string="_Save"
+            icon="tryton-ok"/>
         <button name="send" string="_Send"
             icon="tryton-ok"/>
     </group>

@@ -93,8 +93,11 @@ class Notary(Workflow, ModelSQL, ModelView):
                 'draft': {
                     'invisible': Eval('state') != 'send'
                 },
+                'save': {
+                    'invisible': Eval('state') == 'send'
+                },
                 'send': {
-                    'invisible': Eval('state') != 'draft'
+                    'invisible': Eval('state') == 'send'
                 },
             })
 
@@ -141,7 +144,6 @@ class Notary(Workflow, ModelSQL, ModelView):
             infoComprobante = raiz[1]
             if self.type == 'out_invoice':
                 if infoComprobante.tag == 'infoFactura':
-                    print "infoComprobante", infoComprobante.tag, infoComprobante.text
                     pass
                 else:
                     res['archivo_xml'] = None
@@ -358,101 +360,17 @@ class Notary(Workflow, ModelSQL, ModelView):
             if error == '1':
                 self.raise_user_error('No se ha encontrado el archivo de firma digital (.p12)')
 
-
             signed_document= s.model.nodux_electronic_invoice_auth.conexiones.apply_digital_signature(factura, file_pk12, password,{})
-            #signed_document = self.replace_charter(signed_document)
-            #envio al sri para recepcion del comprobante electronico
             result = s.model.nodux_electronic_invoice_auth.conexiones.send_receipt(signed_document, {})
             if result != True:
                 self.raise_user_error(result)
-            time.sleep(WAIT_FOR_RECEIPT)
-            # solicitud al SRI para autorizacion del comprobante electronico
+
             if self.company.party.email:
                 email = self.company.party.email
             else:
                 self.raise_user_error('No ha configurado el correo de la empresa')
 
-            numero_factura = ""
-            totalSinImpuestos = Decimal(0.0)
-            importeTotal = Decimal(0.0)
-            nombre = ""
-            numero_libro = ""
-            matrizador = ""
-            direccion = "Loja"
-            phone = ""
-            mobile = ""
-
-            if len(raiz) == 3:
-                infoTributaria = raiz[0]
-                infoFactura = raiz[1]
-                detalles = raiz[2]
-                infoAdicional = None
-            if len(raiz) == 4 :
-                infoTributaria = raiz[0]
-                infoFactura = raiz[1]
-                detalles = raiz[2]
-                infoAdicional = raiz[3]
-
-            for it in infoTributaria:
-                if it.tag == "claveAcceso":
-                    access_key = it.text
-                if it.tag == "estab":
-                    estab = it.text
-                if it.tag == "ptoEmi":
-                    ptoEmi = it.text
-                if it.tag == "secuencial":
-                    secuencial = it.text
-            numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
-            notaries = Notary.search([('number_invoice', '=', numero_factura)])
-            if notaries :
-                self.raise_user_error('Comprobante ya enviado al SRI')
-
-            for i_f in infoFactura:
-                if i_f.tag == "identificacionComprador":
-                    vat_number = i_f.text
-                if i_f.tag == 'razonSocialComprador':
-                    nombre = i_f.text
-                if i_f.tag == 'direccionComprador':
-                    direccion = i_f.text
-                if i_f.tag == 'totalSinImpuestos':
-                    totalSinImpuestos = Decimal(i_f.text)
-                if i_f.tag == 'importeTotal':
-                    importeTotal = Decimal(i_f.text)
-                if i_f.tag == 'fechaEmision':
-                    date_str = i_f.text
-                    formatter_string = "%d/%m/%Y"
-                    datetime_object = datetime.datetime.strptime(date_str, formatter_string)
-                    fechaEmision = datetime_object.date()
-
-            if infoAdicional != None:
-                for ia in infoAdicional:
-                    if re.match("[a-zA-ZñÑáéíóúÁÉÍÓÚ\ ]", ia.text):
-                        matrizador = ia.text
-                        break
-
-            if infoAdicional != None:
-                for ia in infoAdicional:
-                    if re.match("[a-z0-9]", ia.text):
-                        numero_libro = ia.text
-                        break
-
-            if infoAdicional != None:
-                for ia in infoAdicional:
-                    if re.match("[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})", ia.text):
-                        email = ia.text
-                        break
-
-            if infoAdicional != None:
-                for ia in infoAdicional:
-                    if ia.text.isdigit() and len(ia.text) > 9:
-                        mobile = ia.text
-                        break
-
-            if infoAdicional != None:
-                for ia in infoAdicional:
-                    if ia.text.isdigit() and len(ia.text) <=9:
-                        phone = ia.text
-                        break
+            access_key = self.clave
             doc_xml, m, auth, path, numero, num = s.model.nodux_electronic_invoice_auth.conexiones.request_authorization(access_key, name_r, 'out_invoice', signed_document,{})
 
             if doc_xml is None:
@@ -460,109 +378,12 @@ class Notary(Workflow, ModelSQL, ModelView):
                 raise m
 
             if auth == 'NO AUTORIZADO':
-                Party = pool.get('party.party')
-                parties = Party.search([('vat_number', '=', vat_number)])
-                if parties:
-                    for p in parties:
-                        party = p
-                else:
-                    correo =  email
-                    Contact = pool.get('party.contact_mechanism')
-                    Address = pool.get('party.address')
-                    party = Party()
-                    party.name = nombre
-                    party.vat_number = vat_number
-                    party.save()
-                    contact_mechanisms = []
-                    contact_mechanisms.append({
-                            'type':'email',
-                            'value':correo,
-                            'party':party.id
-                    })
-                    if phone != "":
-                        contact_mechanisms.append({
-                                'type':'phone',
-                                'value':phone,
-                                'party':party.id,
-                        })
-                    if mobile != "":
-                        contact_mechanisms.append({
-                                'type':'mobile',
-                                'value':mobile,
-                                'party':party.id,
-                        })
-                    party.address = Address.create([{
-                            'street': direccion,
-                            'party':party.id
-                    }])
-                    contact_mechanisms = Contact.create(contact_mechanisms)
-
-                    party.save()
-
                 self.write([self],{
-                        'party': party.id,
-                        'number_invoice':numero_factura,
-                        'subtotal':totalSinImpuestos,
-                        'iva': Decimal(importeTotal-totalSinImpuestos),
-                        'total': importeTotal,
                         'estado_sri':'NO AUTORIZADO',
-                        'numero_autorizacion':num,
-                        'clave':access_key,
-                        'invoice_date_':fechaEmision,
-                        'mensaje':doc_xml,
-                        'no_libro':numero_libro,
-                        'matrizador':matrizador})
+                        'invoice_date_':fechaEmision})
             else:
-                Party = pool.get('party.party')
-                parties = Party.search([('vat_number', '=', vat_number)])
-                if parties:
-                    for p in parties:
-                        party = p
-                else:
-                    correo =  email
-                    Contact = pool.get('party.contact_mechanism')
-                    Address = pool.get('party.address')
-                    party = Party()
-                    party.name = nombre
-                    party.vat_number = vat_number
-                    party.save()
-                    contact_mechanisms = []
-                    contact_mechanisms.append({
-                            'type':'email',
-                            'value':correo,
-                            'party':party.id
-                    })
-                    if phone != "":
-                        contact_mechanisms.append({
-                                'type':'phone',
-                                'value':phone,
-                                'party':party.id,
-                        })
-                    if mobile != "":
-                        contact_mechanisms.append({
-                                'type':'mobile',
-                                'value':mobile,
-                                'party':party.id,
-                        })
-                    party.address = Address.create([{
-                            'street': direccion,
-                            'party':party.id
-                    }])
-                    contact_mechanisms = Contact.create(contact_mechanisms)
-                    party.save()
-
                 self.write([self],{
-                        'party': party.id,
-                        'number_invoice':numero_factura,
-                        'subtotal':totalSinImpuestos,
-                        'iva': Decimal(importeTotal-totalSinImpuestos),
-                        'total': importeTotal,
-                        'estado_sri':'AUTORIZADO',
-                        'numero_autorizacion':num,
-                        'clave':access_key,
-                        'invoice_date_':fechaEmision,
-                        'no_libro':numero_libro,
-                        'matrizador':matrizador})
+                        'estado_sri':'AUTORIZADO'})
                 self.send_mail_invoice(doc_xml, access_key, send_m, s)
 
             os.remove(directory_xml)
@@ -623,39 +444,71 @@ class Notary(Workflow, ModelSQL, ModelView):
                 else:
                     self.raise_user_error('No ha configurado el correo de la empresa')
 
-                numero_factura = ""
-                totalSinImpuestos = Decimal(0.0)
-                importeTotal = Decimal(0.0)
-                nombre = ""
-                direccion = "Loja"
-                phone = ""
-                mobile = ""
-                if len(raiz) == 3:
-                    infoTributaria = raiz[0]
-                    infoNotaCredito = raiz[1]
-                    detalles = raiz[2]
-                    infoAdicional = None
-                if len(raiz) == 4 :
-                    infoTributaria = raiz[0]
-                    infoNotaCredito = raiz[1]
-                    detalles = raiz[2]
-                    infoAdicional = raiz[3]
+                access_key = self.clave
+                doc_xml, m, auth, path, numero, num = s.model.nodux_electronic_invoice_auth.conexiones.request_authorization(access_key, name_r, 'out_credit_note', signed_document, {})
+                if doc_xml is None:
+                    msg = ' '.join(m)
+                    raise m
 
-                for it in infoTributaria:
-                    if it.tag == "claveAcceso":
-                        access_key = it.text
-                    if it.tag == "estab":
-                        estab = it.text
-                    if it.tag == "ptoEmi":
-                        ptoEmi = it.text
-                    if it.tag == "secuencial":
-                        secuencial = it.text
-                numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
-                notaries = Notary.search([('number_invoice', '=', numero_factura)])
-                if notaries :
-                    self.raise_user_error('Comprobante ya enviado al SRI')
+                if auth == 'NO AUTORIZADO':
+                    self.write([self],{
+                            'estado_sri':'NO AUTORIZADO',
+                            'mensaje':doc_xml})
+                else:
+                    self.write([self],{
+                            'estado_sri':'AUTORIZADO'})
+                    self.send_mail_invoice(doc_xml, access_key, send_m, s)
+                os.remove(directory_xml)
 
-                for i_f in infoNotaCredito:
+        return access_key
+
+    def save_file_xml(self):
+        pool = Pool()
+        Party = pool.get('party.party')
+        if self.archivo_xml:
+            f = open(directory_xml, 'wb')
+            f.write(self.archivo_xml)
+            f.close()
+            doc=etree.parse(directory_xml)
+            raiz=doc.getroot()
+        else:
+            self.raise_user_error('Cargue el archivo xml')
+        numero_factura = ""
+        totalSinImpuestos = Decimal(0.0)
+        importeTotal = Decimal(0.0)
+        nombre = ""
+        numero_libro = ""
+        matrizador = None
+        direccion = "Loja"
+        phone = ""
+        mobile = ""
+        if len(raiz) == 3:
+            infoTributaria = raiz[0]
+            infoFactura = raiz[1]
+            detalles = raiz[2]
+            infoAdicional = None
+        if len(raiz) == 4 :
+            infoTributaria = raiz[0]
+            infoFactura = raiz[1]
+            detalles = raiz[2]
+            infoAdicional = raiz[3]
+        if self.type == 'out_invoice':
+            for it in infoTributaria:
+                if it.tag == "claveAcceso":
+                    access_key = it.text
+                if it.tag == "estab":
+                    estab = it.text
+                if it.tag == "ptoEmi":
+                    ptoEmi = it.text
+                if it.tag == "secuencial":
+                    secuencial = it.text
+            numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
+            notaries = Notary.search([('number_invoice', '=', numero_factura)])
+            if notaries :
+                self.raise_user_error('Comprobante ya enviado al SRI')
+
+            else:
+                for i_f in infoFactura:
                     if i_f.tag == "identificacionComprador":
                         vat_number = i_f.text
                     if i_f.tag == 'razonSocialComprador':
@@ -664,7 +517,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                         direccion = i_f.text
                     if i_f.tag == 'totalSinImpuestos':
                         totalSinImpuestos = Decimal(i_f.text)
-                    if i_f.tag == 'valorModificacion':
+                    if i_f.tag == 'importeTotal':
                         importeTotal = Decimal(i_f.text)
                     if i_f.tag == 'fechaEmision':
                         date_str = i_f.text
@@ -702,126 +555,194 @@ class Notary(Workflow, ModelSQL, ModelView):
                             phone = ia.text
                             break
 
-                doc_xml, m, auth, path, numero, num = s.model.nodux_electronic_invoice_auth.conexiones.request_authorization(access_key, name_r, 'out_credit_note', signed_document, {})
-                if doc_xml is None:
-                    msg = ' '.join(m)
-                    raise m
-
-                if auth == 'NO AUTORIZADO':
-                    Party = pool.get('party.party')
-                    parties = Party.search([('vat_number', '=', vat_number)])
-                    if parties:
-                        for p in parties:
-                            party = p
-                    else:
-                        correo =  email
-                        Contact = pool.get('party.contact_mechanism')
-                        Address = pool.get('party.address')
-                        party = Party()
-                        party.name = nombre
-                        party.vat_number = vat_number
-                        party.save()
-                        contact_mechanisms = []
-                        contact_mechanisms.append({
-                                'type':'email',
-                                'value':correo,
-                                'party':party.id
-                        })
-                        if phone != "":
-                            contact_mechanisms.append({
-                                    'type':'phone',
-                                    'value':phone,
-                                    'party':party.id,
-                            })
-                        if mobile != "":
-                            contact_mechanisms.append({
-                                    'type':'mobile',
-                                    'value':mobile,
-                                    'party':party.id,
-                            })
-                        party.address = Address.create([{
-                                'street': direccion,
-                                'party':party.id
-                        }])
-                        contact_mechanisms = Contact.create(contact_mechanisms)
-
-                        party.save()
-
-                    self.write([self],{
-                            'party': party.id,
-                            'number_invoice':numero_factura,
-                            'subtotal':totalSinImpuestos,
-                            'iva': Decimal(importeTotal-totalSinImpuestos),
-                            'total': importeTotal,
-                            'estado_sri':'NO AUTORIZADO',
-                            'numero_autorizacion':num,
-                            'clave':access_key,
-                            'invoice_date_':fechaEmision,
-                            'mensaje':doc_xml,
-                            'state':'draft',
-                            'no_libro':numero_libro,
-                            'matrizador':matrizador})
+                parties = Party.search([('vat_number', '=', vat_number)])
+                if parties:
+                    for p in parties:
+                        party = p
                 else:
-                    Party = pool.get('party.party')
-                    parties = Party.search([('vat_number', '=', vat_number)])
-                    if parties:
-                        for p in parties:
-                            party = p
-                    else:
-                        correo =  email
-                        Contact = pool.get('party.contact_mechanism')
-                        Address = pool.get('party.address')
-                        party = Party()
-                        party.name = nombre
-                        party.vat_number = vat_number
-                        party.save()
-                        contact_mechanisms = []
+                    correo =  email
+                    Contact = pool.get('party.contact_mechanism')
+                    Address = pool.get('party.address')
+                    party = Party()
+                    party.name = nombre
+                    party.vat_number = vat_number
+                    party.save()
+                    contact_mechanisms = []
+                    contact_mechanisms.append({
+                            'type':'email',
+                            'value':correo,
+                            'party':party.id
+                    })
+                    if phone != "":
                         contact_mechanisms.append({
-                                'type':'email',
-                                'value':correo,
-                                'party':party.id
+                                'type':'phone',
+                                'value':phone,
+                                'party':party.id,
                         })
-                        if phone != "":
-                            contact_mechanisms.append({
-                                    'type':'phone',
-                                    'value':phone,
-                                    'party':party.id,
-                            })
-                        if mobile != "":
-                            contact_mechanisms.append({
-                                    'type':'mobile',
-                                    'value':mobile,
-                                    'party':party.id,
-                            })
-                        party.address = Address.create([{
-                                'street': direccion,
-                                'party':party.id
-                        }])
-                        contact_mechanisms = Contact.create(contact_mechanisms)
+                    if mobile != "":
+                        contact_mechanisms.append({
+                                'type':'mobile',
+                                'value':mobile,
+                                'party':party.id,
+                        })
+                    party.address = Address.create([{
+                            'street': direccion,
+                            'party':party.id
+                    }])
+                    contact_mechanisms = Contact.create(contact_mechanisms)
 
-                        party.save()
+                    party.save()
 
-                    self.write([self],{
-                            'party': party.id,
-                            'number_invoice':numero_factura,
-                            'subtotal':totalSinImpuestos,
-                            'iva': Decimal(importeTotal-totalSinImpuestos),
-                            'total': importeTotal,
-                            'estado_sri':'AUTORIZADO',
-                            'numero_autorizacion':num,
-                            'clave':access_key,
-                            'invoice_date_':fechaEmision,
-                            'no_libro':numero_libro,
-                            'matrizador':matrizador})
+                self.write([self],{
+                        'party': party.id,
+                        'number_invoice':numero_factura,
+                        'subtotal':totalSinImpuestos,
+                        'iva': Decimal(importeTotal-totalSinImpuestos),
+                        'total': importeTotal,
+                        'estado_sri':'NO ENVIADO',
+                        'numero_autorizacion':access_key,
+                        'clave':access_key,
+                        'invoice_date_':fechaEmision,
+                        'no_libro':numero_libro,
+                        'matrizador':matrizador})
 
-                    self.send_mail_invoice(doc_xml, access_key, send_m, s)
-                os.remove(directory_xml)
-        return access_key
+        elif self.type == 'out_credit_note':
+            numero_factura = ""
+            totalSinImpuestos = Decimal(0.0)
+            importeTotal = Decimal(0.0)
+            nombre = ""
+            direccion = "Loja"
+            phone = ""
+            mobile = ""
+            for it in infoTributaria:
+                if it.tag == "claveAcceso":
+                    access_key = it.text
+                if it.tag == "estab":
+                    estab = it.text
+                if it.tag == "ptoEmi":
+                    ptoEmi = it.text
+                if it.tag == "secuencial":
+                    secuencial = it.text
+            numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
+            notaries = Notary.search([('number_invoice', '=', numero_factura)])
+            if notaries :
+                self.raise_user_error('Comprobante ya enviado al SRI')
+
+            for i_f in infoNotaCredito:
+                if i_f.tag == "identificacionComprador":
+                    vat_number = i_f.text
+                if i_f.tag == 'razonSocialComprador':
+                    nombre = i_f.text
+                if i_f.tag == 'direccionComprador':
+                    direccion = i_f.text
+                if i_f.tag == 'totalSinImpuestos':
+                    totalSinImpuestos = Decimal(i_f.text)
+                if i_f.tag == 'valorModificacion':
+                    importeTotal = Decimal(i_f.text)
+                if i_f.tag == 'fechaEmision':
+                    date_str = i_f.text
+                    formatter_string = "%d/%m/%Y"
+                    datetime_object = datetime.datetime.strptime(date_str, formatter_string)
+                    fechaEmision = datetime_object.date()
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if re.match("[a-zA-ZñÑáéíóúÁÉÍÓÚ\ ]", ia.text):
+                        matrizador = ia.text
+                        break
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if re.match("[a-z0-9]", ia.text):
+                        numero_libro = ia.text
+                        break
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if re.match("[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})", ia.text):
+                        email = ia.text
+                        break
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if ia.text.isdigit() and len(ia.text) > 9:
+                        mobile = ia.text
+                        break
+
+            if infoAdicional != None:
+                for ia in infoAdicional:
+                    if ia.text.isdigit() and len(ia.text) <=9:
+                        phone = ia.text
+                        break
+
+            parties = Party.search([('vat_number', '=', vat_number)])
+            if parties:
+                for p in parties:
+                    party = p
+            else:
+                correo =  email
+                Contact = pool.get('party.contact_mechanism')
+                Address = pool.get('party.address')
+                party = Party()
+                party.name = nombre
+                party.vat_number = vat_number
+                party.save()
+                contact_mechanisms = []
+                contact_mechanisms.append({
+                        'type':'email',
+                        'value':correo,
+                        'party':party.id
+                })
+                if phone != "":
+                    contact_mechanisms.append({
+                            'type':'phone',
+                            'value':phone,
+                            'party':party.id,
+                    })
+                if mobile != "":
+                    contact_mechanisms.append({
+                            'type':'mobile',
+                            'value':mobile,
+                            'party':party.id,
+                    })
+                party.address = Address.create([{
+                        'street': direccion,
+                        'party':party.id
+                }])
+                contact_mechanisms = Contact.create(contact_mechanisms)
+                party.save()
+
+            self.write([self],{
+                    'party': party.id,
+                    'number_invoice':numero_factura,
+                    'subtotal':totalSinImpuestos,
+                    'iva': Decimal(importeTotal-totalSinImpuestos),
+                    'total': importeTotal,
+                    'estado_sri':'NO ENVIADO',
+                    'numero_autorizacion':access_key,
+                    'clave':access_key,
+                    'invoice_date_':fechaEmision,
+                    'state':'draft',
+                    'no_libro':numero_libro,
+                    'matrizador':matrizador})
+
+        os.remove(directory_xml)
+        return True
+
+    @classmethod
+    @ModelView.button
+    def save(cls, notaries):
+        for notary in notaries:
+            notary.save_file_xml()
 
     @classmethod
     @ModelView.button
     def send(cls, notaries):
         for notary in notaries:
+            if notary.party:
+                pass
+            else:
+                notary.save_file_xml()
             notary.action_generate_invoice()
             notary.connect_db()
 
