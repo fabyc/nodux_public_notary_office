@@ -458,13 +458,13 @@ class Notary(Workflow, ModelSQL, ModelView):
                     self.write([self],{
                             'estado_sri':'AUTORIZADO'})
                     self.send_mail_invoice(doc_xml, access_key, send_m, s)
-                os.remove(directory_xml)
 
         return access_key
 
     def save_file_xml(self):
         pool = Pool()
         Party = pool.get('party.party')
+        Notary = pool.get('notary.notary')
         if self.archivo_xml:
             f = open(directory_xml, 'wb')
             f.write(self.archivo_xml)
