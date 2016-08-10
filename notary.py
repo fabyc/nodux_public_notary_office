@@ -607,6 +607,16 @@ class Notary(Workflow, ModelSQL, ModelView):
                         'matrizador':matrizador})
 
         elif self.type == 'out_credit_note':
+            if len(raiz) == 3:
+                infoTributaria = raiz[0]
+                infoNotaCredito = raiz[1]
+                detalles = raiz[2]
+                infoAdicional = None
+            if len(raiz) == 4 :
+                infoTributaria = raiz[0]
+                infoNotaCredito = raiz[1]
+                detalles = raiz[2]
+                infoAdicional = raiz[3]
             numero_factura = ""
             totalSinImpuestos = Decimal(0.0)
             importeTotal = Decimal(0.0)
