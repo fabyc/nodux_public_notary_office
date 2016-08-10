@@ -482,6 +482,7 @@ class Notary(Workflow, ModelSQL, ModelView):
         direccion = "Loja"
         phone = ""
         mobile = ""
+        email = self.company.party.email
         if len(raiz) == 3:
             infoTributaria = raiz[0]
             infoFactura = raiz[1]
