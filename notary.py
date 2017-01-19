@@ -504,7 +504,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                 if it.tag == "secuencial":
                     secuencial = it.text
             numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
-            notaries = Notary.search([('number_invoice', '=', numero_factura)])
+            notaries = Notary.search([('number_invoice', '=', numero_factura), ('type', '=', 'out_invoice')])
             if notaries :
                 self.raise_user_error('Comprobante ya enviado al SRI')
 
@@ -635,7 +635,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                 if it.tag == "secuencial":
                     secuencial = it.text
             numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
-            notaries = Notary.search([('number_invoice', '=', numero_factura)])
+            notaries = Notary.search([('number_invoice', '=', numero_factura), ('type', '=', 'out_credit_note')])
             if notaries :
                 self.raise_user_error('Comprobante ya enviado al SRI')
 
