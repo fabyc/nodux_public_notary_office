@@ -87,6 +87,8 @@ class Notary(Workflow, ModelSQL, ModelView):
                     'it is send.'),
                 'delete_notary': ('You can not delete invoice "%s" because '
                     'it is send.'),
+                'delete_notary_perm': ('You can not delete invoice "%s" because '
+                    'you are not permission.'),
                 })
 
         cls._buttons.update({
@@ -167,6 +169,27 @@ class Notary(Workflow, ModelSQL, ModelView):
         for notary in notaries:
             if (notary.state in ('send')):
                 cls.raise_user_error('delete_notary', (notary.number_invoice,))
+            if (notary.state in ('draft')):
+
+                origin = str(notaries)
+                def in_group():
+                    pool = Pool()
+                    ModelData = pool.get('ir.model.data')
+                    User = pool.get('res.user')
+                    Group = pool.get('res.group')
+                    Module = pool.get('ir.module.module')
+                    group = Group(ModelData.get_id('nodux_public_notary_office',
+                                    'group_delete_invoice'))
+                    transaction = Transaction()
+                    user_id = transaction.user
+                    if user_id == 0:
+                        user_id = transaction.context.get('user', user_id)
+                    if user_id == 0:
+                        return True
+                    user = User(user_id)
+                    return origin and group in user.groups
+                if not in_group():
+                    cls.raise_user_error('delete_notary_perm', (notary.number_invoice,))
         super(Notary, cls).delete(notaries)
 
     def replace_charter(self, cadena):
@@ -458,13 +481,13 @@ class Notary(Workflow, ModelSQL, ModelView):
                     self.write([self],{
                             'estado_sri':'AUTORIZADO'})
                     self.send_mail_invoice(doc_xml, access_key, send_m, s)
+                #os.remove(directory_xml)
 
         return access_key
 
     def save_file_xml(self):
         pool = Pool()
         Party = pool.get('party.party')
-        Notary = pool.get('notary.notary')
         if self.archivo_xml:
             f = open(directory_xml, 'wb')
             f.write(self.archivo_xml)
@@ -636,6 +659,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                     secuencial = it.text
             numero_factura = str(estab)+'-'+str(ptoEmi)+'-'+secuencial
             notaries = Notary.search([('number_invoice', '=', numero_factura), ('type', '=', 'out_credit_note')])
+
             if notaries :
                 self.raise_user_error('Comprobante ya enviado al SRI')
 
