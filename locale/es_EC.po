@@ -7,6 +7,14 @@ msgid "You can not delete invoice \"%s\" because it is send."
 msgstr "No puede eliminar la factura \"%s\" porque está enviada."
 
 msgctxt "error:notary.notary:"
+msgid "You can not delete invoice because you are not permission."
+msgstr "No puede eliminar el comprobante, porque no tiene permiso"
+
+msgctxt "error:notary.notary:"
+msgid "You can not modify credit note because you are not permission."
+msgstr "No puede modificar la nota de crédito, porque no tiene permiso."
+
+msgctxt "error:notary.notary:"
 msgid "You can not modify invoice \"%s\" because it is send."
 msgstr "No puede modificar la factura \"%s\" porque está enviada."
 
@@ -59,6 +67,10 @@ msgctxt "field:notary.notary,archivo_xml:"
 msgid "Factura formato XML"
 msgstr ""
 
+msgctxt "field:notary.notary,clave:"
+msgid "Clave de acceso"
+msgstr ""
+
 msgctxt "field:notary.notary,company:"
 msgid "Company"
 msgstr "Empresa"
@@ -75,11 +87,15 @@ msgctxt "field:notary.notary,estado_sri:"
 msgid "Estado Facturacion-Electronica"
 msgstr ""
 
+msgctxt "field:notary.notary,fecha_autorizacion:"
+msgid "Fecha Autorizacion"
+msgstr ""
+
 msgctxt "field:notary.notary,id:"
 msgid "ID"
 msgstr "ID"
 
-msgctxt "field:notary.notary,invoice_date:"
+msgctxt "field:notary.notary,invoice_date_:"
 msgid "Fecha"
 msgstr ""
 
@@ -87,12 +103,24 @@ msgctxt "field:notary.notary,iva:"
 msgid "IVA"
 msgstr ""
 
+msgctxt "field:notary.notary,matrizador:"
+msgid "Matrizador"
+msgstr ""
+
+msgctxt "field:notary.notary,mensaje:"
+msgid "Mensaje de error SRI"
+msgstr ""
+
+msgctxt "field:notary.notary,no_libro:"
+msgid "Numero de libro"
+msgstr ""
+
 msgctxt "field:notary.notary,number_invoice:"
 msgid "No. Comprobante"
 msgstr ""
 
 msgctxt "field:notary.notary,numero_autorizacion:"
-msgid "Numero de Autorizacion"
+msgid "Numero Autorizacion"
 msgstr ""
 
 msgctxt "field:notary.notary,party:"
@@ -258,12 +286,12 @@ msgstr "Todo"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_notary_out_credit_note_domain_draft"
-msgid "Borrador"
+msgid "Not Send"
 msgstr "No enviado"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_notary_out_credit_note_domain_send"
-msgid "Enviado"
+msgid "Sended"
 msgstr "Enviado"
 
 msgctxt ""
@@ -273,12 +301,12 @@ msgstr "Todo"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_notary_out_invoice_domain_draft"
-msgid "Borrador"
+msgid "Not Send"
 msgstr "No enviado"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_notary_out_invoice_domain_send"
-msgid "Enviado"
+msgid "Sended"
 msgstr "Enviado"
 
 msgctxt "model:ir.ui.menu,name:menu_notary_out_credit_note_form"
@@ -296,6 +324,14 @@ msgstr "Notaria Pública"
 msgctxt "model:notary.notary,name:"
 msgid "Notary"
 msgstr "Notaria"
+
+msgctxt "model:res.group,name:group_delete_invoice"
+msgid "Nodux - Delete Invoice"
+msgstr "Nodux - Eliminar Comprobantes"
+
+msgctxt "model:res.group,name:group_modify_credit"
+msgid "Nodux - Modify Credit Note"
+msgstr "Nodux - Modificar Nota de Crédito"
 
 msgctxt "odt:notary.notary:"
 msgid "%"
@@ -334,7 +370,20 @@ msgid "Cantidad"
 msgstr ""
 
 msgctxt "odt:notary.notary:"
+msgid "Celular:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Cliente"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
 msgid "Comprobante que se modifica"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid ""
+"Consulte sus comprobantes electrónicos en: http://comprobantes.nodux.ec"
 msgstr ""
 
 msgctxt "odt:notary.notary:"
@@ -358,8 +407,8 @@ msgid "EMISION: NORMAL"
 msgstr ""
 
 msgctxt "odt:notary.notary:"
-msgid "Email:"
-msgstr ""
+msgid "Email"
+msgstr "Email"
 
 msgctxt "odt:notary.notary:"
 msgid "FACTURA"
@@ -390,6 +439,10 @@ msgid "MBIENTE:"
 msgstr ""
 
 msgctxt "odt:notary.notary:"
+msgid "Matrizador:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
 msgid "N"
 msgstr ""
 
@@ -399,6 +452,14 @@ msgstr ""
 
 msgctxt "odt:notary.notary:"
 msgid "NUMERO DE AUTORIZACIÓN"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "NUMERO DE LIBRO:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Nodux - (07) 2 560215 - 0999323367 - hola@nodux.e"
 msgstr ""
 
 msgctxt "odt:notary.notary:"
@@ -454,7 +515,23 @@ msgid "SUBTOTAL no objeto de IVA"
 msgstr ""
 
 msgctxt "odt:notary.notary:"
+msgid "Sistema"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "Teléfono:"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
 msgid "VALOR TOTAL"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "c"
+msgstr ""
+
+msgctxt "odt:notary.notary:"
+msgid "cliente"
 msgstr ""
 
 msgctxt "odt:notary.notary:"
@@ -563,6 +640,10 @@ msgstr "Facturas"
 
 msgctxt "view:notary.notary:"
 msgid "Monto total comprobantes emitidos"
+msgstr ""
+
+msgctxt "view:notary.notary:"
+msgid "_Save"
 msgstr ""
 
 msgctxt "view:notary.notary:"

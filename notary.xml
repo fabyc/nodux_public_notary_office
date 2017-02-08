@@ -141,5 +141,21 @@ this repository contains the full copyright notices and license terms. -->
             <field name="group" ref="group_delete_invoice"/>
         </record>
 
+        <record model="res.group" id="group_modify_credit">
+            <field name="name">Nodux - Modify Credit Note</field>
+        </record>
+
+        <record model="res.user-res.group"
+            id="user_admin_group_modify_credit">
+            <field name="user" ref="res.user_admin"/>
+            <field name="group" ref="group_modify_credit"/>
+        </record>
+
+        <record model="res.user-res.group"
+            id="user_trigger_group_modify_credit">
+            <field name="user" ref="res.user_admin"/>
+            <field name="group" ref="group_modify_credit"/>
+        </record>
+
     </data>
 </tryton>

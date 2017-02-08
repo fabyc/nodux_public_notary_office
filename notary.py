@@ -87,7 +87,9 @@ class Notary(Workflow, ModelSQL, ModelView):
                     'it is send.'),
                 'delete_notary': ('You can not delete invoice "%s" because '
                     'it is send.'),
-                'delete_notary_perm': ('You can not delete invoice "%s" because '
+                'delete_notary_perm': ('You can not delete invoice because '
+                    'you are not permission.'),
+                'modify_credit_note': ('You can not modify credit note because '
                     'you are not permission.'),
                 })
 
@@ -158,10 +160,57 @@ class Notary(Workflow, ModelSQL, ModelView):
         return res
 
     @classmethod
+    def validate(cls, notaries):
+        super(Notary, cls).validate(notaries)
+        for notary in notaries:
+            if notary.type == "out_credit_note":
+                origin = str(notaries)
+                def in_group():
+                    pool = Pool()
+                    ModelData = pool.get('ir.model.data')
+                    User = pool.get('res.user')
+                    Group = pool.get('res.group')
+                    Module = pool.get('ir.module.module')
+                    group = Group(ModelData.get_id('nodux_public_notary_office',
+                                    'group_modify_credit'))
+                    transaction = Transaction()
+                    user_id = transaction.user
+                    if user_id == 0:
+                        user_id = transaction.context.get('user', user_id)
+                    if user_id == 0:
+                        return True
+                    user = User(user_id)
+                    return origin and group in user.groups
+                if not in_group():
+                    cls.raise_user_error('modify_credit_note')
+
+    @classmethod
     def check_modify(cls, notaries):
         for notary in notaries:
             if (notary.state in ('send')):
                 cls.raise_user_error('modify_notary', (notary.number_invoice,))
+            if notary.type == "out_credit_note":
+                origin = str(notaries)
+                def in_group():
+                    pool = Pool()
+                    ModelData = pool.get('ir.model.data')
+                    User = pool.get('res.user')
+                    Group = pool.get('res.group')
+                    Module = pool.get('ir.module.module')
+                    group = Group(ModelData.get_id('nodux_public_notary_office',
+                                    'group_modify_credit'))
+                    transaction = Transaction()
+                    user_id = transaction.user
+                    if user_id == 0:
+                        user_id = transaction.context.get('user', user_id)
+                    if user_id == 0:
+                        return True
+                    user = User(user_id)
+                    return origin and group in user.groups
+                if not in_group():
+                    cls.raise_user_error('modify_credit_note')
+
+
 
     @classmethod
     def delete(cls, notaries):
@@ -189,7 +238,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                     user = User(user_id)
                     return origin and group in user.groups
                 if not in_group():
-                    cls.raise_user_error('delete_notary_perm', (notary.number_invoice,))
+                    cls.raise_user_error('delete_notary_perm')
         super(Notary, cls).delete(notaries)
 
     def replace_charter(self, cadena):
