@@ -452,7 +452,7 @@ class Notary(Workflow, ModelSQL, ModelView):
             if auth == 'NO AUTORIZADO':
                 self.write([self],{
                         'estado_sri':'NO AUTORIZADO',
-                        'invoice_date_':fechaEmision})
+                        'mensaje':doc_xml})
             else:
                 self.write([self],{
                         'estado_sri':'AUTORIZADO'})
