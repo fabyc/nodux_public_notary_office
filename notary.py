@@ -632,7 +632,6 @@ class Notary(Workflow, ModelSQL, ModelView):
                 parties = Party.search([('vat_number', '=', vat_number)])
                 Contact = pool.get('party.contact_mechanism')
 
-                Contact = pool.get('party.contact_mechanism')
                 if parties:
                     for p in parties:
                         party = p
