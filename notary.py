@@ -242,12 +242,12 @@ class Notary(Workflow, ModelSQL, ModelView):
         super(Notary, cls).delete(notaries)
 
     def replace_charter(self, cadena):
-        
+
         reemplazo = {u"Â":"A", u"Á":"A", u"À":"A", u"Ä":"A", u"É":"E", u"È":"E", u"Ê":"E",u"Ë":"E",
             u"Í":"I",u"Ì":"I",u"Î":"I",u"Ï":"I",u"Ó":"O",u"Ò":"O",u"Ö":"O",u"Ô":"O",u"Ú":"U",u"Ù":"U",u"Ü":"U",
             u"Û":"U",u"á":"a",u"à":"a",u"â":"a",u"ä":"a",u"é":"e",u"è":"e",u"ê":"e",u"ë":"e",u"í":"i",u"ì":"i",
             u"ï":"i",u"î":"i",u"ó":"o",u"ò":"o",u"ô":"o",u"ö":"o",u"ú":"u",u"ù":"u",u"ü":"u",u"û":"u",u"ñ":"n",
-            u"Ñ":"N", u"  ":" "}
+            u"Ñ":"N", u"  ":" ", "  ":""}
         regex = re.compile("(%s)" % "|".join(map(re.escape, reemplazo.keys())))
         nueva_cadena = regex.sub(lambda x: str(reemplazo[x.string[x.start():x.end()]]), cadena)
         return nueva_cadena
@@ -630,12 +630,55 @@ class Notary(Workflow, ModelSQL, ModelView):
                             break
 
                 parties = Party.search([('vat_number', '=', vat_number)])
+                Contact = pool.get('party.contact_mechanism')
+
+                Contact = pool.get('party.contact_mechanism')
                 if parties:
                     for p in parties:
                         party = p
+                        contact_mechanisms = []
+                        if party.email:
+                            emails = Contact.search([('party', '=', party), ('type', '=', 'email')])
+                            for e in emails:
+                                e.value = email
+                                e.save()
+                        else:
+                            contact_mechanisms.append({
+                                    'type':'email',
+                                    'value':email,
+                                    'party':party.id
+                            })
+
+                        if party.phone:
+                            phones = Contact.search([('party', '=', party), ('type', '=', 'phone')])
+                            for p in phones:
+                                p.value = phone
+                                p.save()
+                        else:
+                            if phone != "":
+                                contact_mechanisms.append({
+                                        'type':'phone',
+                                        'value':phone,
+                                        'party':party.id,
+                                })
+                        if party.mobile:
+                            mobiles = Contact.search([('party', '=', party), ('type', '=', 'mobile')])
+                            for m in mobiles:
+                                m.value = mobile
+                                m.save()
+                        else:
+                            if mobile != "":
+                                contact_mechanisms.append({
+                                        'type':'mobile',
+                                        'value':mobile,
+                                        'party':party.id,
+                                })
+                        Contact.create(contact_mechanisms)
+                        party.name = nombre
+                        party.save()
                 else:
                     correo =  email
-                    Contact = pool.get('party.contact_mechanism')
+
                     Address = pool.get('party.address')
                     party = Party()
                     party.name = nombre
