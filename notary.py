@@ -917,6 +917,7 @@ class NotaryReport(Report):
         localcontext['lines'] = cls._get_lines(Notary, notary)
         localcontext['subtotal0'] = cls._get_subtotal_0(Notary, notary)
         localcontext['subtotal14'] = cls._get_subtotal_14(Notary, notary)
+        localcontext['subtotal12'] = cls._get_subtotal_12(Notary, notary)
         if notary.type == 'out_credit_note':
             localcontext['numero'] = cls._get_numero(Notary, notary)
             localcontext['fecha'] = cls._get_fecha(Notary, notary)
@@ -1034,6 +1035,30 @@ class NotaryReport(Report):
                         if i.tag == "baseImponible":
                             subtotal14 += Decimal(i.text)
         return subtotal14
+
+    @classmethod
+    def _get_subtotal_12(cls, Notary, notary):
+        subtotal12 = Decimal(0.00)
+        f = open(directory_xml, 'wb')
+        f.write(notary.archivo_xml)
+        f.close()
+        doc=etree.parse(directory_xml)
+        lines = {}
+        raiz=doc.getroot()
+        infoTributaria = raiz[0]
+        infoFactura = raiz[1]
+        detalles = raiz[2]
+
+        for info in infoFactura:
+            for impuestos in info:
+                a = False
+                for i in impuestos:
+                    if i.tag == "codigoPorcentaje" and i.text == "2":
+                        a = True
+                    if a == True:
+                        if i.tag == "baseImponible":
+                            subtotal12 += Decimal(i.text)
+        return subtotal12
 
     @classmethod
     def _get_numero(cls, Notary, notary):
