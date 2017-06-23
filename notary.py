@@ -352,8 +352,7 @@ class Notary(Workflow, ModelSQL, ModelView):
             if self.no_valid == True:
                 pass
             else:
-                self.write([self],{
-                        'no_valid':True})
+                self.write([self],{'no_valid':True})
 
         return True
 
@@ -476,7 +475,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                         'estado_sri':'AUTORIZADO'})
                 self.send_mail_invoice(doc_xml, access_key, send_m, s)
 
-            os.remove(directory_xml)
+            #os.remove(directory_xml)
 
         else:
             if self.type == 'out_credit_note':
