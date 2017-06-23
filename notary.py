@@ -352,8 +352,8 @@ class Notary(Workflow, ModelSQL, ModelView):
             if self.no_valid == True:
                 pass
             else:
-                self.no_valid = True
-                self.save()
+                self.write([self],{
+                        'no_valid':True})
 
         return True
 
@@ -574,7 +574,7 @@ class Notary(Workflow, ModelSQL, ModelView):
         mobile = ""
         email = self.company.party.email
         no_valid = self.no_valid
-        
+
         if len(raiz) == 3:
             infoTributaria = raiz[0]
             infoFactura = raiz[1]
