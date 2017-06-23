@@ -24,6 +24,7 @@ import os
 from trytond.config import config
 import re
 from trytond import backend
+from validate_email import validate_email
 
 directory = config.get('database', 'path')
 directory_xml = directory +'/factura.xml'
@@ -76,6 +77,7 @@ class Notary(Workflow, ModelSQL, ModelView):
     matrizador = fields.Char('Matrizador', readonly=True)
     no_libro = fields.Char('Numero de libro', readonly=True)
     invoice_date_ = fields.Date('Fecha', readonly=True)
+    no_valid = fields.Boolean('Email Valid', readonly=True)
 
     @classmethod
     def __setup__(cls):
@@ -337,7 +339,22 @@ class Notary(Workflow, ModelSQL, ModelView):
         save_files = s.model.nodux_electronic_invoice_auth.conexiones.save_file(empresa, name_pdf, name_xml, reporte, xml,{})
         p_xml = nuevaruta + name_xml
         p_pdf = nuevaruta + name_pdf
-        s.model.nodux_electronic_invoice_auth.conexiones.send_mail(name_pdf, name, p_xml, p_pdf, from_email, to_email, n_tipo, num_fac, client, empresa_, ruc, {})
+
+
+        if self.no_valid == True:
+            es_valido = False
+        else:
+            es_valido = validate_email(to_email, verify=True)
+
+        if es_valido == True:
+            s.model.nodux_electronic_invoice_auth.conexiones.send_mail(name_pdf, name, p_xml, p_pdf, from_email, to_email, n_tipo, num_fac, client, empresa_, ruc, {})
+        else:
+            if self.no_valid == True:
+                pass
+            else:
+                self.no_valid = True
+                self.save()
+
         return True
 
     def connect_db(self):
@@ -639,8 +656,13 @@ class Notary(Workflow, ModelSQL, ModelView):
                         if party.email:
                             emails = Contact.search([('party', '=', party), ('type', '=', 'email')])
                             for e in emails:
+                                if e.value != email:
+                                    no_valid = False
+                                else:
+                                    no_valid = self.no_valid
                                 e.value = email
                                 e.save()
+
                         else:
                             contact_mechanisms.append({
                                     'type':'email',
