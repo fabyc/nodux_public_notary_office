@@ -1,0 +1,4 @@
+Libreria validate_email para validación de correos electrónicos
+Install
+- pip install pyDNS validate_email
+
