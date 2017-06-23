@@ -733,6 +733,7 @@ class Notary(Workflow, ModelSQL, ModelView):
 
                 self.write([self],{
                         'party': party.id,
+                        'no_valid': no_valid,
                         'number_invoice':numero_factura,
                         'subtotal':totalSinImpuestos,
                         'iva': Decimal(importeTotal-totalSinImpuestos),
