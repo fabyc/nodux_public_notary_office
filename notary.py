@@ -573,6 +573,8 @@ class Notary(Workflow, ModelSQL, ModelView):
         phone = ""
         mobile = ""
         email = self.company.party.email
+        no_valid = self.no_valid
+        
         if len(raiz) == 3:
             infoTributaria = raiz[0]
             infoFactura = raiz[1]
@@ -658,8 +660,7 @@ class Notary(Workflow, ModelSQL, ModelView):
                             for e in emails:
                                 if e.value != email:
                                     no_valid = False
-                                else:
-                                    no_valid = self.no_valid
+
                                 e.value = email
                                 e.save()
 
